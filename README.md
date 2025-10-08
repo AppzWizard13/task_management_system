@@ -12,8 +12,6 @@ A Django-based task management system with Docker, PostgreSQL, and automated sup
 ### 1. Clone the Repository
 
 git clone https://github.com/AppzWizard13/task_management_system
-cd task_management_system
-
 
 ### 2. Create Environment File
 
