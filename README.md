@@ -24,7 +24,8 @@ cp .env.example .env
 
 docker-compose up -d --build
 
-user superadmin crederntials 
+superadmin crederntials 
 
 username : admin
+
 password : admin
