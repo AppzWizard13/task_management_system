@@ -413,7 +413,7 @@ class RoleDetailView(
     """
 
     model = Role
-    template_name = 'organizations/role_detail.html'
+    template_name = 'organizations/generic_detail.html'
     context_object_name = 'object'
     required_permission = 'organizations.view_role'
 

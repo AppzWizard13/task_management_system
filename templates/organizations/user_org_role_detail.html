@@ -1,0 +1,84 @@
+{% extends "index.html" %}
+{% load static %}
+{% load permission_tags %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 d-flex align-items-stretch">
+    <div class="card w-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="card-title fw-semibold mb-0">{{ page_title }}</h5>
+          <div>
+            {% if edit_url and can_edit %}
+              {% if request.user|has_permission:can_edit %}
+              <a href="{% url edit_url object.pk %}" class="btn btn-sm btn-warning">
+                <i class="ti ti-edit"></i> Edit
+              </a>
+              {% endif %}
+            {% endif %}
+            {% if list_url %}
+            <a href="{% url list_url %}" class="btn btn-sm btn-secondary">
+              <i class="ti ti-arrow-left"></i> Back to List
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <th class="text-muted" style="width: 30%;">User</th>
+                <td class="fw-semibold">
+                  {{ object.user.get_full_name|default:object.user.username }}
+                  {% if object.user.email %}
+                    <small class="text-muted d-block">{{ object.user.email }}</small>
+                  {% endif %}
+                </td>
+              </tr>
+              
+              <tr>
+                <th class="text-muted" style="width: 30%;">Organization</th>
+                <td class="fw-semibold">{{ organization_name }}</td>
+              </tr>
+
+              <tr>
+                <th class="text-muted" style="width: 30%;">Department</th>
+                <td>{{ department_name }}</td>
+              </tr>
+
+              <tr>
+                <th class="text-muted" style="width: 30%;">Role</th>
+                <td class="fw-semibold">{{ role_name }}</td>
+              </tr>
+              
+              {% if role_description %}
+              <tr>
+                <th class="text-muted" style="width: 30%;">Role Description</th>
+                <td>{{ role_description }}</td>
+              </tr>
+              {% endif %}
+              
+              <tr>
+                <th class="text-muted" style="width: 30%;">Permissions</th>
+                <td>
+                  {% if permissions %}
+                    {% for perm in permissions %}
+                      <span class="badge bg-primary me-1 mb-1">{{ perm.name }}</span>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-muted">No permissions assigned</span>
+                  {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
