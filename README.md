@@ -22,7 +22,7 @@ cp .env.example .env
 
 ### 3. Build and Run the Project
 
-docker-compose up -d --build
+docker compose up -d --build
 
 superadmin crederntials 
 
