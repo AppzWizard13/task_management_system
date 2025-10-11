@@ -11,9 +11,7 @@ A Django-based task management system with Docker, PostgreSQL, and automated sup
 
 ### 1. Clone the Repository
 
-git clone <repository-url>
-cd <project-directory>
-
+git clone https://github.com/AppzWizard13/task_management_system
 
 ### 2. Create Environment File
 
@@ -24,9 +22,10 @@ cp .env.example .env
 
 ### 3. Build and Run the Project
 
-docker-compose up -d --build
+docker compose up -d --build
 
-user superadmin crederntials 
+superadmin crederntials 
 
 username : admin
+
 password : admin
