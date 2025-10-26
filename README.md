@@ -1,7 +1,4 @@
-Here’s your cleaned-up **README.md** without emojis and properly formatted:
-
-
-````markdown
+````
 # Django Task Management System
 
 
@@ -51,6 +48,8 @@ cp .env.example .env
 
 
 ### 3. Build and Run the Project
+
+Read the guide from docker-compose.yml and uncomment DB and Adminer code for run in local machine
 
 
 ```bash
@@ -200,15 +199,7 @@ docker compose down -v
 * Manage all users (via Django admin)
 
 
-## Security Notes
+### POSTMAN COLLECTION IS ADDED IN ROOT FOLDER : Task Management System API.postman_collection.json
 
-
-1. Change default admin password immediately after first login
-2. Use strong `SECRET_KEY` in production
-3. Set `DEBUG=False` in production
-4. Configure proper `ALLOWED_HOSTS` in production
-5. Use environment-specific database credentials
-6. Enable HTTPS in production
-7. Set proper CORS headers for production
 
 
