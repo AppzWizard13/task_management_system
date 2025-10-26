@@ -31,7 +31,12 @@ SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-g_jp(cx#le7y&a$sd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DJANGO_DEBUG', default=True)
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=[])
+# ALLOWED_HOSTS - uses automatically set RENDER_EXTERNAL_HOSTNAME
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_EXTERNAL_HOSTNAME]  # Auto-populated by Render
+else:
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 
 # Application definition
