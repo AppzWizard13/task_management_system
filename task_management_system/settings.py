@@ -65,6 +65,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+if not DEBUG:
+    # WhiteNoise middleware for static files in production
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+
+
 ROOT_URLCONF = 'task_management_system.urls'
 
 TEMPLATES = [
@@ -140,6 +146,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / "static", 
 ]
+
+if not DEBUG:
+    # WhiteNoise static storage backend
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
