@@ -1,0 +1,541 @@
+{
+	"info": {
+		"_postman_id": "68582c18-8737-4603-b5ca-81e5d59f3021",
+		"name": "Task Management System API",
+		"description": "Comprehensive Postman collection for testing the Django Task Management System API. Includes authentication (JWT), user profile management, and complete task CRUD operations. Base URL: http://localhost:8000",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28838154"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.test('User registered successfully', function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('username');",
+									"        pm.expect(jsonData).to.have.property('email');",
+									"    });",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('user_id', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"rajesh.kumar\",\n  \"email\": \"rajesh.kumar@techcorp.in\",\n  \"password\": \"SecurePass@2025\",\n  \"password2\": \"SecurePass@2025\",\n  \"full_name\": \"Rajesh Kumar\",\n  \"dob\": \"1995-08-22\",\n  \"gender\": \"Male\",\n  \"mobile\": \"+919876543210\",\n  \"address\": \"42, Anna Salai, T. Nagar, Chennai, Tamil Nadu 600017\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/register/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"register",
+								""
+							]
+						},
+						"description": "Creates a new user account with professional dummy data. Password confirmation required."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.test('Login successful', function () {",
+									"        pm.expect(jsonData).to.have.property('access');",
+									"        pm.expect(jsonData).to.have.property('refresh');",
+									"    });",
+									"    pm.collectionVariables.set('access_token', jsonData.access);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+									"    console.log('Access token set:', jsonData.access);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"rajesh.kumar\",\n  \"password\": \"SecurePass@2025\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/login/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"login",
+								""
+							]
+						},
+						"description": "Authenticates user and returns JWT access and refresh tokens. Access token is automatically saved to collection variables."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.test('Token refreshed successfully', function () {",
+									"        pm.expect(jsonData).to.have.property('access');",
+									"    });",
+									"    pm.collectionVariables.set('access_token', jsonData.access);",
+									"    console.log('New access token set:', jsonData.access);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/token/refresh/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"token",
+								"refresh",
+								""
+							]
+						},
+						"description": "Generates a new access token using the refresh token. Use when access token expires."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/logout/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"logout",
+								""
+							]
+						},
+						"description": "Blacklists the refresh token, effectively logging out the user."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for user registration, login, token refresh, and logout using JWT authentication."
+		},
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/accounts/profile/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"profile",
+								""
+							]
+						},
+						"description": "Retrieves the authenticated user's complete profile details."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Rajesh Kumar M\",\n  \"dob\": \"1995-08-22\",\n  \"gender\": \"Male\",\n  \"mobile\": \"+919876543211\",\n  \"address\": \"Suite 102, Coimbatore IT Park, Saravanampatti, Coimbatore, Tamil Nadu 641035\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/profile/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"profile",
+								""
+							]
+						},
+						"description": "Updates the authenticated user's profile information. Partial updates supported."
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"old_password\": \"SecurePass@2025\",\n  \"new_password\": \"NewSecurePass@2025\",\n  \"new_password2\": \"NewSecurePass@2025\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/accounts/change-password/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"accounts",
+								"change-password",
+								""
+							]
+						},
+						"description": "Changes the authenticated user's password. Requires old password verification."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing authenticated user profile. Requires Bearer token authentication."
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "List All Tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test('Tasks retrieved successfully', function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.be.an('array');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tasks/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								""
+							]
+						},
+						"description": "Retrieves all tasks for the authenticated user. Supports pagination and filtering."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.test('Task created successfully', function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('title');",
+									"    });",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('task_id', jsonData.id);",
+									"    console.log('Task ID saved:', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Complete Django REST API Documentation\",\n  \"description\": \"Write comprehensive API documentation for the task management system including all endpoints, request/response examples, and authentication flow.\",\n  \"priority\": \"high\",\n  \"status\": \"pending\",\n  \"due_date\": \"2025-11-15\",\n  \"category\": \"development\",\n  \"tags\": [\"api\", \"documentation\", \"django\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tasks/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								""
+							]
+						},
+						"description": "Creates a new task for the authenticated user with professional details."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tasks/{{task_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}",
+								""
+							]
+						},
+						"description": "Retrieves detailed information for a specific task by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Complete Django REST API Documentation - Updated\",\n  \"description\": \"Write comprehensive API documentation including authentication, endpoints, error handling, and deployment guidelines.\",\n  \"priority\": \"high\",\n  \"status\": \"in_progress\",\n  \"due_date\": \"2025-11-20\",\n  \"category\": \"development\",\n  \"tags\": [\"api\", \"documentation\", \"django\", \"rest-framework\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tasks/{{task_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}",
+								""
+							]
+						},
+						"description": "Completely updates an existing task. All fields required."
+					},
+					"response": []
+				},
+				{
+					"name": "Partial Update Task",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"completed\",\n  \"completed_date\": \"2025-10-26\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tasks/{{task_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}",
+								""
+							]
+						},
+						"description": "Partially updates specific fields of a task. Only modified fields required."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tasks/{{task_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}",
+								""
+							]
+						},
+						"description": "Permanently deletes a task. This action cannot be undone."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tasks/?search=django",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "django"
+								}
+							]
+						},
+						"description": "Searches tasks by title or description keywords."
+					},
+					"response": []
+				}
+			],
+			"description": "Complete CRUD operations for task management. All endpoints require authentication."
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "task_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
