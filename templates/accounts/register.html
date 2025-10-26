@@ -1,0 +1,332 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JWT Register | Task Management</title>
+  <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/favicon.png' %}" />
+  <link rel="stylesheet" href="{% static 'assets/css/styles.min.css' %}" />
+  {% bootstrap_css %}
+  
+  <style>
+    .form-section {
+      border-left: 3px solid #5D87FF;
+      padding-left: 15px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      color: #2A3547;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical"
+       data-navbarbg="skin6" data-sidebartype="full"
+       data-sidebar-position="fixed" data-header-position="fixed">
+
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100
+                d-flex align-items-center justify-content-center">
+
+      <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="row justify-content-center w-100">
+          <div class="col-md-10 col-lg-8 col-xxl-6">
+            <div class="card mb-0 shadow-lg">
+              <div class="card-body p-4">
+                <div class="text-nowrap logo-img text-center d-block py-3 w-100">
+                  <i class="ti ti-clipboard-check text-primary me-2" style="font-size: 32px;"></i>
+                  <div class="fw-bold text-dark" style="font-size: 18px;">Task Management System</div>
+                </div>
+
+                <p class="text-center mb-4 text-muted">Create your account to get started</p>
+
+                <!-- JWT Registration Form -->
+                <form id="jwtRegisterForm" class="needs-validation" novalidate>
+                  
+                  <!-- Login Credentials Section -->
+                  <div class="form-section">
+                    <div class="section-title">
+                      <i class="ti ti-lock me-2"></i>Login Credentials
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" id="username" class="form-control" 
+                               placeholder="Choose a username" required>
+                        <div class="invalid-feedback">Username is required</div>
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" id="email" class="form-control" 
+                               placeholder="your.email@example.com" required>
+                        <div class="invalid-feedback">Valid email is required</div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" id="password" class="form-control" 
+                               placeholder="Min 8 characters" required minlength="8">
+                        <div class="invalid-feedback">Password must be at least 8 characters</div>
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label for="password2" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                        <input type="password" id="password2" class="form-control" 
+                               placeholder="Re-enter password" required>
+                        <div class="invalid-feedback">Passwords must match</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Profile Information Section -->
+                  <div class="form-section">
+                    <div class="section-title">
+                      <i class="ti ti-user me-2"></i>Profile Information (Optional)
+                    </div>
+                    
+                    <div class="mb-3">
+                      <label for="full_name" class="form-label">Full Name</label>
+                      <input type="text" id="full_name" class="form-control" 
+                             placeholder="Enter your full name">
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" id="date_of_birth" class="form-control">
+                      </div>
+
+                      <div class="col-md-6 mb-3">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select id="gender" class="form-select">
+                          <option value="">Select Gender</option>
+                          <option value="M">Male</option>
+                          <option value="F">Female</option>
+                          <option value="O">Other</option>
+                          <option value="P">Prefer not to say</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="mobile_number" class="form-label">Mobile Number</label>
+                      <input type="tel" id="mobile_number" class="form-control" 
+                             placeholder="1234567890">
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="address" class="form-label">Address</label>
+                      <textarea id="address" class="form-control" rows="2" 
+                                placeholder="Enter your address"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <button type="submit" id="registerBtn" class="btn btn-primary w-100 py-2 fs-5 rounded-2 mb-3">
+                    <span id="btnText">
+                      <i class="ti ti-user-plus me-2"></i>Create Account
+                    </span>
+                    <span id="btnSpinner" class="d-none">
+                      <span class="spinner-border spinner-border-sm me-2"></span>Creating account...
+                    </span>
+                  </button>
+
+                  <div class="text-center">
+                    <small class="text-muted">
+                      By registering, you agree to our Terms of Service and Privacy Policy
+                    </small>
+                  </div>
+                </form>
+
+                <div class="d-flex align-items-center justify-content-center mt-4">
+                  <p class="fs-6 mb-0 fw-bold text-muted">Already have an account?</p>
+                  <a class="text-primary fw-bold ms-2" href="{% url 'accounts:login' %}">Sign In</a>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-center mt-3 text-muted small">© 2025 Task Management System</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container (top-right) -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1055">
+    <div id="registerToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="registerToastBody">
+          <!-- Message injected here -->
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  {% bootstrap_javascript %}
+  <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+  <script>
+    // Constants
+    const API_REGISTER_URL = '/accounts/register/';
+    const DASHBOARD_URL = '/accounts/dashboard/';
+    const TASKS_URL = '/tasks/tasks/';
+    const LOGIN_URL = '{% url "accounts:login" %}';
+
+    const registerToastEl = document.getElementById('registerToast');
+    const registerToast = new bootstrap.Toast(registerToastEl);
+
+    // Form validation and submission
+    document.getElementById('jwtRegisterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Check form validity
+      const form = e.target;
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+      }
+
+      // Get form values
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const password2 = document.getElementById('password2').value;
+
+      // Check if passwords match
+      if (password !== password2) {
+        showToast('Passwords do not match', 'danger');
+        return;
+      }
+
+      // Show loading state
+      setLoading(true);
+
+      // Build request payload
+      const payload = {
+        username,
+        email,
+        password,
+        password2
+      };
+
+      // Add optional fields if filled
+      const full_name = document.getElementById('full_name').value.trim();
+      const date_of_birth = document.getElementById('date_of_birth').value;
+      const gender = document.getElementById('gender').value;
+      const mobile_number = document.getElementById('mobile_number').value.trim();
+      const address = document.getElementById('address').value.trim();
+
+      if (full_name) payload.full_name = full_name;
+      if (date_of_birth) payload.date_of_birth = date_of_birth;
+      if (gender) payload.gender = gender;
+      if (mobile_number) payload.mobile_number = mobile_number;
+      if (address) payload.address = address;
+
+      try {
+        const response = await fetch(API_REGISTER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          // Handle validation errors
+          let errorMessage = 'Registration failed';
+          if (data.username) errorMessage = `Username: ${data.username[0]}`;
+          else if (data.email) errorMessage = `Email: ${data.email[0]}`;
+          else if (data.password) errorMessage = `Password: ${data.password[0]}`;
+          else if (data.detail) errorMessage = data.detail;
+          
+          throw new Error(errorMessage);
+        }
+
+        // Save tokens
+        localStorage.setItem('access_token', data.tokens.access);
+        localStorage.setItem('refresh_token', data.tokens.refresh);
+
+        // Determine redirect URL based on user role
+        const redirectUrl = data.user.is_superuser ? DASHBOARD_URL : TASKS_URL;
+        const userRole = data.user.is_superuser ? 'Admin' : 'User';
+
+        // Show success message
+        showToast(`Welcome ${userRole}! Account created successfully. Redirecting...`, 'success');
+
+        // Redirect after 1.5 seconds
+        setTimeout(() => {
+          console.log(`Redirecting ${userRole} to ${redirectUrl}...`);
+          window.location.href = redirectUrl;
+        }, 1500);
+
+      } catch (error) {
+        showToast(error.message, 'danger');
+        setLoading(false);
+      }
+    });
+
+    // Password match validation
+    document.getElementById('password2').addEventListener('input', function() {
+      const password = document.getElementById('password').value;
+      const password2 = this.value;
+      
+      if (password2 && password !== password2) {
+        this.setCustomValidity('Passwords do not match');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+
+    // Set loading state
+    function setLoading(isLoading) {
+      const btn = document.getElementById('registerBtn');
+      const btnText = document.getElementById('btnText');
+      const btnSpinner = document.getElementById('btnSpinner');
+      
+      if (isLoading) {
+        btn.disabled = true;
+        btnText.classList.add('d-none');
+        btnSpinner.classList.remove('d-none');
+      } else {
+        btn.disabled = false;
+        btnText.classList.remove('d-none');
+        btnSpinner.classList.add('d-none');
+      }
+    }
+
+    // Helper function to show toast
+    function showToast(message, type = 'info') {
+      const toastEl = document.getElementById('registerToast');
+      const toastBody = document.getElementById('registerToastBody');
+      
+      // Set message
+      toastBody.textContent = message;
+      
+      // Set color based on type
+      toastEl.className = 'toast align-items-center border-0';
+      if (type === 'success') {
+        toastEl.classList.add('text-bg-success');
+      } else if (type === 'danger') {
+        toastEl.classList.add('text-bg-danger');
+      } else {
+        toastEl.classList.add('text-bg-info');
+      }
+      
+      registerToast.show();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | Task Management{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block loading_text %}Loading dashboard...{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-12 d-flex align-items-stretch">
+    <div class="card w-100">
+      <div class="card-body">
+        <h4 class="card-title fw-semibold mb-4">
+          <i class="ti ti-layout-dashboard text-primary me-2"></i>Dashboard Overview
+        </h4>
+        <div class="row" id="statisticsCards">
+          <!-- Filled by JS -->
+        </div>
+        <div class="row">
+          <!-- Top Assignees -->
+          <div class="col-md-6">
+            <div class="card" style="height: 800px;">
+              <div class="card-body d-flex flex-column h-100">
+                <h5 class="card-title fw-semibold mb-4">
+                  <i class="ti ti-trophy text-warning me-2"></i>Top Assignees
+                </h5>
+                <div class="table-responsive flex-grow-1" style="max-height: 500px; overflow-y: auto;">
+                  <table class="table table-hover">
+                    <thead class="sticky-top bg-white">
+                      <tr><th>User</th><th>Email</th><th class="text-end">Tasks</th></tr>
+                    </thead>
+                    <tbody id="topAssigneesTable"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Recent Tasks -->
+          <div class="col-md-6">
+            <div class="card" style="height: 800px;">
+              <div class="card-body d-flex flex-column h-100">
+                <h5 class="card-title fw-semibold mb-4">
+                  <i class="ti ti-clock text-info me-2"></i>Recent Tasks
+                </h5>
+                <div class="flex-grow-1" style="max-height: 500px; overflow-y: auto;">
+                  <div class="list-group" id="latestTasksList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+checkAuthAndLoadDashboard();
+
+async function checkAuthAndLoadDashboard() {
+  const accessToken = localStorage.getItem('access_token');
+  if (!accessToken) {
+    window.location.href = "/accounts/login/";
+    return;
+  }
+
+  try {
+    const response = await fetch("/accounts/api/dashboard/", {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 401) {
+      window.location.href = "/accounts/login/";
+      return;
+    }
+    if (!response.ok) {
+      let data;
+      try {
+        data = await response.json();
+      } catch(e) {
+        data = {};
+      }
+      throw new Error(data.detail || 'Failed to fetch dashboard data');
+    }
+
+    const data = await response.json();
+    document.getElementById('currentUsername').textContent = data.user.username;
+    document.getElementById('userAvatar').textContent = data.user.username.charAt(0).toUpperCase();
+
+    populateDashboard(data);
+    document.getElementById('loadingOverlay').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+
+  } catch (error) {
+    showToast((error && error.message) ? error.message : 'Failed to load dashboard', 'danger');
+    setTimeout(() => window.location.href = "/accounts/login/", 2500);
+  }
+}
+
+function populateDashboard(data) {
+  const statsHTML = `
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card bg-light-info text-info">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div><h6 class="fw-semibold mb-1">Total Users</h6><h3 class="fw-bold mb-0">${data.stats.total_users}</h3></div>
+          <div class="stat-icon"><i class="ti ti-users"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card bg-light-primary text-primary">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div><h6 class="fw-semibold mb-1">All Tasks</h6><h3 class="fw-bold mb-0">${data.stats.total_tasks}</h3></div>
+          <div class="stat-icon"><i class="ti ti-clipboard-list"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card bg-light-success text-success">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div><h6 class="fw-semibold mb-1">My Tasks</h6><h3 class="fw-bold mb-0">${data.stats.user_task_count}</h3></div>
+          <div class="stat-icon"><i class="ti ti-list-check"></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card bg-light-warning text-warning">
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div><h6 class="fw-semibold mb-1">This Week</h6><h3 class="fw-bold mb-0">${data.stats.recent_tasks_count}</h3></div>
+          <div class="stat-icon"><i class="ti ti-calendar-event"></i></div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('statisticsCards').innerHTML = statsHTML;
+
+  const colors = [
+    ['#667eea', '#764ba2'],
+    ['#f093fb', '#f5576c'],
+    ['#4facfe', '#00f2fe'],
+    ['#43e97b', '#38f9d7'],
+    ['#fa709a', '#fee140']
+  ];
+
+  let assigneesHTML = '';
+  if (data.top_assignees && data.top_assignees.length > 0) {
+    data.top_assignees.forEach((assignee, index) => {
+      const colorPair = colors[index % colors.length];
+      assigneesHTML += `
+      <tr>
+        <td><div class="d-flex align-items-center"><div class="assignee-avatar me-2" style="background: linear-gradient(135deg, ${colorPair[0]} 0%, ${colorPair[1]} 100%);">${assignee.username.charAt(0).toUpperCase()}</div><strong>${escapeHtml(assignee.username)}</strong></div></td>
+        <td class="text-muted">${escapeHtml(assignee.email)}</td>
+        <td class="text-end"><span class="badge bg-primary">${assignee.task_count}</span></td>
+      </tr>
+      `;
+    });
+  } else {
+    assigneesHTML = '<tr><td colspan="3" class="text-center text-muted py-3">No tasks assigned yet</td></tr>';
+  }
+  document.getElementById('topAssigneesTable').innerHTML = assigneesHTML;
+
+  let tasksHTML = '';
+  if (data.latest_tasks && data.latest_tasks.length > 0) {
+    data.latest_tasks.forEach(task => {
+      const date = new Date(task.created_at);
+      const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const timeAgo = getTimeAgo(date);
+
+      tasksHTML += `
+        <div class="list-group-item task-item mb-2 border rounded">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">${escapeHtml(task.title)}</h6>
+              <p class="mb-1 text-muted small">${escapeHtml(task.description)}</p>
+              <small class="text-muted"><i class="ti ti-clock me-1"></i>${timeAgo}</small>
+            </div>
+            <span class="badge bg-light-primary text-primary">${formattedDate}</span>
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    tasksHTML = `<div class="text-center text-muted py-4"><i class="ti ti-inbox" style="font-size: 3rem; opacity: 0.3;"></i><p class="mt-2">No tasks created yet</p></div>`;
+  }
+  document.getElementById('latestTasksList').innerHTML = tasksHTML;
+}
+
+function getTimeAgo(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  if (seconds < 60) return `${seconds} seconds ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days > 1 ? 's' : ''} ago`;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+{% endblock %}
