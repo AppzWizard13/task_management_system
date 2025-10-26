@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views import View
-
-
+from django.conf import settings
+from django.http import HttpResponse, Http404
+from django.views.static import serve as django_serve
+import os
 class Custom404View(View):
     """
     Handle custom 404 (Page Not Found) errors.
@@ -15,19 +17,16 @@ class Custom404View(View):
     template_name = '404.html'
 
     def get(self, request, *args, **kwargs):
-        """
-        Render the custom 404 error page.
 
-        Args:
-            request (HttpRequest): The incoming request object.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            HttpResponse: Rendered 404 page response.
-        """
         context = {
             'title': 'Page Not Found',
             'message': 'Oops! The page you are looking for does not exist.',
         }
         return render(request, self.template_name, context, status=404)
+
+def serve_media(request, path):
+    """Serve media files in production."""
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path):
+        return django_serve(request, path, document_root=settings.MEDIA_ROOT)
+    raise Http404("Media file not found")
