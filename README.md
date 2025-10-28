@@ -1,214 +1,219 @@
-Here’s your cleaned-up **README.md** without emojis and properly formatted:
 
+---
 
 ````markdown
 # Django Task Management System
 
+A full-stack Django-based task management system with JWT authentication, PostgreSQL support for production, and automatic superuser creation.
 
-A full-stack Django-based task management system with JWT authentication, Docker containerization, PostgreSQL database, and automated superuser creation.
-
+---
 
 ## Features
 
+- JWT Authentication – Secure token-based authentication
+- User Management – Registration, login, profile management
+- Task CRUD – Create, read, update, delete tasks with file attachments
+- Role-Based Access – Admin dashboard and user-specific task views
+- Auto Superuser – Automatically creates an admin account on first run
+- Dual DB Setup – SQLite for local development, PostgreSQL for production
 
-- JWT Authentication - Secure token-based authentication
-- User Management - Registration, login, profile management
-- Task CRUD - Create, read, update, delete tasks with file attachments
-- Role-Based Access - Admin dashboard and user-specific task views
-- Docker Support - Fully containerized with Docker Compose
-- PostgreSQL Database - Production-ready database setup
-- Auto Superuser - Automatically creates admin account on first run
-
+---
 
 ## Requirements
 
+- Python 3.10+
+- pip
+- virtualenv (recommended)
 
-- Docker 20.10+
-- Docker Compose 2.0+
-
+---
 
 ## Quick Start Guide
 
-
 ### 1. Clone the Repository
-
 
 ```bash
 git clone https://github.com/AppzWizard13/task_management_system
 cd task_management_system
 ````
 
+### 2. Create Virtual Environment and Activate It
 
-### 2. Create Environment File
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
+### 3. Install Dependencies
 
-Copy the `.env.example` file to create your `.env` file:
+```bash
+pip install -r requirements.txt
+```
 
+### 4. Set Up Environment Variables
+
+Copy the `.env.example` file to create your `.env`:
 
 ```bash
 cp .env.example .env
 ```
 
+Update the `.env` file as needed:
 
-### 3. Build and Run the Project
-
-
-```bash
-docker compose up -d --build
-```
-
-
-> Note: The application will automatically create a superuser account on the first container startup.
-
-
-### 4. Access the Application
-
-
-* Application URL: [http://localhost:8000](http://localhost:8000)
-* Admin Dashboard: [http://localhost:8000/accounts/login/](http://localhost:8000/accounts/login/)
-* Adminer: [http://localhost:8080/](http://localhost:8080/)
-
-
-### 5. Default Admin Credentials
-
-
-The system automatically creates a superuser with the following credentials:
-
-
-* Username: `admin`
-* Password: `admin`
-* Email: `admin@admin.com`
-
-
-## Environment Variables
-
-
-Key environment variables in `.env`:
-
-
-```
+```env
 # Django Settings
 SECRET_KEY=your-secret-key-here
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
 
-# Database Settings
-DB_NAME=task_management_db
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_HOST=db
-DB_PORT=5432
+# Production Database (PostgreSQL for Render)
+# DATABASE_ENGINE=django.db.backends.postgresql
+# DATABASE_NAME=task_management_db
+# DATABASE_USER=postgres
+# DATABASE_PASSWORD=your-password
+# DATABASE_HOST=your-render-db-host
+# DATABASE_PORT=5432
 
-
-# Superuser Credentials (auto-created on first run)
+# Auto Superuser
 DJANGO_SUPERUSER_USERNAME=admin
 DJANGO_SUPERUSER_PASSWORD=admin
 DJANGO_SUPERUSER_EMAIL=admin@admin.com
 ```
 
+---
 
-## Development Commands
-
+## Local Development Setup
 
 ### Run Migrations
 
-
 ```bash
-docker compose exec web python manage.py migrate
+python manage.py migrate
 ```
 
-
-### Create Additional Superuser
-
+### Create Default Admin (if not auto-created)
 
 ```bash
-docker compose exec web python manage.py createsuperuser
+python manage.py create_admin
 ```
 
-
-### Collect Static Files
-
+### Start Development Server
 
 ```bash
-docker compose exec web python manage.py collectstatic --noinput
+python manage.py runserver
 ```
 
+Access the app at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-### View Logs
+---
 
+## Default Admin Credentials
+
+| Field    | Value             |
+| -------- | ----------------- |
+| Username | `admin`           |
+| Password | `admin`           |
+| Email    | `admin@admin.com` |
+
+---
+
+## Deployment on Render
+
+Render uses PostgreSQL automatically (configure via environment variables).
+
+### Build Command
 
 ```bash
-docker compose logs -f web
+pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py create_admin
 ```
 
-
-### Access Django Shell
-
+### Start Command
 
 ```bash
-docker compose exec web python manage.py shell
+gunicorn task_management_system.wsgi:application
 ```
 
-
-### Stop the Application
-
-
-```bash
-docker compose down
-```
-
-
-### Stop and Remove Volumes
-
-
-```bash
-docker compose down -v
-```
-
+---
 
 ## Technologies Used
 
+* **Backend:** Django 4.x, Django REST Framework
+* **Database:** SQLite (local), PostgreSQL (production)
+* **Auth:** JWT (Simple JWT)
+* **Frontend:** HTML, CSS, JavaScript, Bootstrap 5
 
-* Backend: Django 4.x, Django REST Framework
-* Database: PostgreSQL 15
-* Authentication: JWT (Simple JWT)
-* Frontend: HTML, CSS, JavaScript, Bootstrap 5
-* Containerization: Docker, Docker Compose
-
+---
 
 ## Application Features
 
+### Regular Users
 
-### For Regular Users
-
-
-* User registration and login
+* User registration & login
 * Profile management (full name, DOB, gender, mobile, address)
 * Password change functionality
-* Create, view, edit, and delete tasks
-* Upload file attachments to tasks
-* View only their own tasks
+* Create, view, edit, delete personal tasks
+* File uploads for tasks
 
-
-### For Admin Users
-
+### Admin Users
 
 * All regular user features
 * Access to admin dashboard
-* View system statistics
-* Manage all users (via Django admin)
+* Manage all users and tasks via Django Admin
+* View system-wide statistics
 
+---
 
-## Security Notes
+## API Testing
 
+A ready-to-use Postman collection is included in the project root:
 
-1. Change default admin password immediately after first login
-2. Use strong `SECRET_KEY` in production
-3. Set `DEBUG=False` in production
-4. Configure proper `ALLOWED_HOSTS` in production
-5. Use environment-specific database credentials
-6. Enable HTTPS in production
-7. Set proper CORS headers for production
+```
+Task Management System API.postman_collection.json
+```
+
+---
+
+## Project Structure
+
+```
+task_management_system/
+│
+├── accounts/                     # User management and auth
+├── core/                         # Core utilities, management commands
+├── tasks/                        # Task CRUD APIs
+├── templates/                    # HTML templates
+├── static/                       # Static files
+├── media/                        # Uploaded files
+├── db.sqlite3                    # Local development database
+├── manage.py
+├── requirements.txt
+├── README.md
+└── Task Management System API.postman_collection.json
+```
+
+---
+
+## Common Commands
+
+| Action               | Command                                    |
+| -------------------- | ------------------------------------------ |
+| Run migrations       | `python manage.py migrate`                 |
+| Create superuser     | `python manage.py createsuperuser`         |
+| Collect static files | `python manage.py collectstatic --noinput` |
+| Run server           | `python manage.py runserver`               |
+| Run Django shell     | `python manage.py shell`                   |
+
+---
+
+## Notes
+
+* SQLite is used for local development simplicity.
+* PostgreSQL will be used automatically in the live Render deployment.
+* The project auto-creates a default admin if one doesn’t exist.
+
+---
+
+```
+
+---
 
 
