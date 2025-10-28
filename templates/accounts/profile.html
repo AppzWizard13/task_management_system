@@ -149,7 +149,17 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     });
 
     if (!response.ok) {
-      throw new Error('Update failed');
+      const errorData = await response.json();
+
+      console.error("Response status:", response.status);
+      console.error("Error details:", errorData);
+
+      // Flatten all messages into a readable string
+      const messages = Object.entries(errorData)
+        .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
+        .join("\n");
+
+      throw new Error(messages);
     }
 
     const data = await response.json();
