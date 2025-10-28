@@ -102,7 +102,9 @@ python manage.py create_admin
 python manage.py runserver
 ```
 
-Access the app at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+Access the app at: [http://127.0.0.1:8000/accounts/login/](http://127.0.0.1:8000/accounts/login/)
+
+Live Instance at : https://task-management-system-jhfi.onrender.com/accounts/login/
 
 ---
 
